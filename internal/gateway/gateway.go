@@ -156,8 +156,8 @@ func (c *Client) Poll(ctx context.Context, taskID string, rounds int) (Result, e
 		select {
 		case <-ctx.Done():
 			timer.Stop()
-			// 调用方已经不再等待，按当前进度收尾
-			return res, nil
+			return Result{TaskID: taskID, State: "aborted", Rounds: res.Rounds},
+				fmt.Errorf("轮询结算单 %s 中止: %w", taskID, ctx.Err())
 		case <-timer.C:
 		}
 		c.mu.Lock()
